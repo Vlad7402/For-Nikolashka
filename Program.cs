@@ -12,18 +12,20 @@ namespace For_Nikolashka
         static void Main(string[] args)
         {
             char[] alphabet = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '!', '@', '#', '$', '%', '^', '&', '*', '<', '>', '(', ')', '|', '~' };
-            string[] lines = new string[4];
+            string[] lines = new string[5];
             lines[0] = "Перевод числа в различные системы счисления(с поддержкой вещественных)";
             lines[1] = "Перевод числа в римскую систему счисления";
             lines[2] = "Объяснение сложения столбиком";
-            lines[3] = "Выход";
+            lines[3] = "Объяснение умножения столбиком";
+            lines[4] = "Выход";
             while (true)
             {
                 int chose = Menu(lines);
                 if (chose == 0) TranslateInAny();
                 if (chose == 1) PrinValInRim();
                 if (chose == 2) SumForFive();
-                if (chose == 3 ) break;
+                if (chose == 3) MultiForFive();
+                if (chose == 4 ) break;
             }
         }
         static void TranslateInAny()
@@ -473,36 +475,31 @@ namespace For_Nikolashka
                 Console.WriteLine(lines[i]);
             }
         }
-        static void Sumator(string firstNum, string secNum, int basis, char[] alphabet)
+        static string Sumator(string firstNum, string secNum, int basis, char[] alphabet)
         {
+            string resultStr = string.Empty;
             int temp = 0;
             firstNum = GetStringWith0First(firstNum);
             secNum = GetStringWith0First(secNum);
-            Console.WriteLine("1");
-            Console.ReadKey();
             int longestString = GetLongestString(firstNum, secNum) - 2;
             while (longestString > firstNum.Length)
             {
                 firstNum = GetStringWith0First(firstNum);
             }
-            Console.WriteLine("2");
-            Console.ReadKey();
-            while (longestString > secNum.Length)
+            while (firstNum.Length > secNum.Length)
             {
                 secNum = GetStringWith0First(secNum);
             }
-            Console.WriteLine("3");
-            Console.ReadKey();
             List<char> result = new List<char>();
             for (int i = 0; i < firstNum.Length; i++) result.Add('0');
-            for (int i = 0; i < GetLongestString(firstNum, secNum); i++)
+            for (int i = 0; i < firstNum.Length; i++)
             {
                 int firstNumInTen = (int)GetValInTen(firstNum[firstNum.Length - 1 - i].ToString(), basis.ToString(), alphabet);
                 int secNumInTen = (int)GetValInTen(secNum[secNum.Length - 1 - i].ToString(), basis.ToString(), alphabet);
                 string sumResult = GetValInAny((decimal)(firstNumInTen + secNumInTen + temp), basis, alphabet);
                 if (sumResult.Length == 1) sumResult = GetStringWith0First(sumResult);
                 string pripiska1 = "";
-                if (temp != 0) pripiska1 = " и осататок " + temp;
+                if (temp != 0) pripiska1 = " и осататок " + GetValInAny((decimal)temp, basis, alphabet);
                 temp = 0;
                 temp = (int)GetValInTen(sumResult[0].ToString(), basis.ToString(), alphabet);
                 string pripiska = "";
@@ -529,6 +526,8 @@ namespace For_Nikolashka
                 Console.ReadKey();
                 Console.Clear();
             }
+            for (int i = 0; i < result.Count; i++) resultStr += result[i];
+            return resultStr;
         }
         static string GetStringWith0First(string input) 
         {
@@ -536,7 +535,8 @@ namespace For_Nikolashka
         }
         static int GetLongestString(string str1, string str2)
         {
-            return str1.Length - (str2.Length - str1.Length);
+            if (str1.Length >= str2.Length) return str1.Length;
+            else return str2.Length;
         }
         static void GoreisontPassing(int pass)
         {
@@ -588,6 +588,121 @@ namespace For_Nikolashka
                 }
             }
             return result;
+        }
+        static void Multiplicator(string firstNum, string secNum, int basis, char[] alphabet)
+        {
+            int temp = 0;
+            firstNum = GetStringWith0First(firstNum);
+            int longestString = GetLongestString(firstNum, secNum) - 2;
+            while (longestString > firstNum.Length)
+            {
+                firstNum = GetStringWith0First(firstNum);
+            }
+            List<char> result = new List<char>();
+            Stack<long> forSumming = new Stack<long>();
+            Console.WriteLine("Выполняем умноение чисел по разрядам.");
+            Console.WriteLine("Результат каждого записываем отдельно для дальнейшего сложения.");
+            Console.WriteLine("Для продолжения нажмите любую клавишу.");
+            Console.ReadKey();
+            Console.Clear();
+            for (int k = 0; k < secNum.Length; k++)
+            {
+                for (int i = 0; i < firstNum.Length; i++) result.Add('0');
+                for (int i = 0; i < firstNum.Length; i++)
+                {
+                    int firstNumInTen = (int)GetValInTen(firstNum[firstNum.Length - 1 - i].ToString(), basis.ToString(), alphabet);
+                    int secNumInTen = (int)GetValInTen(secNum[secNum.Length - 1 - k].ToString(), basis.ToString(), alphabet);
+                    string sumResult = GetValInAny((decimal)(firstNumInTen * secNumInTen + temp), basis, alphabet);
+                    if (sumResult.Length == 1) sumResult = GetStringWith0First(sumResult);
+                    string pripiska1 = "";
+                    if (temp != 0) pripiska1 = " и прибавляем осататок " + GetValInAny((decimal)temp, basis, alphabet);
+                    temp = 0;
+                    temp = (int)GetValInTen(sumResult[0].ToString(), basis.ToString(), alphabet);
+                    string pripiska = "";
+                    if (temp != 0) pripiska = " Осататок " + sumResult[0] + " от произведения переносится вперёд.";
+
+                    result.RemoveAt(firstNum.Length - 1 - i);
+                    result.Insert(firstNum.Length - 1 - i, sumResult[1]);
+                    Console.SetCursorPosition(1, 0);
+                    GoreisontPassing(GetLongestString(firstNum, secNum) - firstNum.Length);
+                    Console.WriteLine(firstNum);
+                    Console.SetCursorPosition(0, 1);
+                    Console.WriteLine("*");
+                    Console.SetCursorPosition(1, 2);
+                    GoreisontPassing(GetLongestString(firstNum, secNum) - secNum.Length);
+                    Console.WriteLine(secNum);
+                    Console.SetCursorPosition(1, 3);
+                    for (int j = 0; j < firstNum.Length; j++) Console.Write('─');
+                    string itog = "";
+                    for (int j = 0; j < result.Count; j++) itog += result[j];
+                    Console.SetCursorPosition(1, 4);
+                    Console.WriteLine(itog);
+                    Console.WriteLine("Умножаем число " + (i + 1) + " порядка" + " на " + secNum[secNum.Length - 1 - k].ToString() + pripiska1 + ". Результат равен " + sumResult + ". " + pripiska + "Вниз записываем " + sumResult[1] + ".");
+                    Console.WriteLine("Для продолжения нажмите любую клавишу.");
+                    Console.ReadKey();
+                    Console.Clear();
+                }
+                string resultStr = string.Empty;
+                for (int i = 0; i < result.Count; i++) resultStr += result[i];
+                Console.WriteLine("Так как мы умножали на число " + (k + 1) + " порядка, то к "  + resultStr + " приписываем " + k + " \"0\".");
+                Console.WriteLine("Для продолжения нажмите любую клавишу.");
+                Console.ReadKey();
+                Console.Clear();
+                for (int i = 0; i < k; i++) resultStr += '0';
+                forSumming.Push((long)GetValInTen(resultStr, basis.ToString(), alphabet));
+                result.Clear();
+                temp = 0;
+            }
+            while (forSumming.Count != 1)
+            {
+                string firsNumForSumming = GetValInAny((decimal)forSumming.Pop(), basis, alphabet);
+                string secNumForSumming = GetValInAny((decimal)forSumming.Pop(), basis, alphabet);
+                Console.WriteLine("Теперь складываем " + firsNumForSumming + " и " + secNumForSumming + " .");
+                Console.WriteLine("Для продолжения нажмите любую клавишу.");
+                Console.ReadKey();
+                Console.Clear();
+                string sumResult = Sumator(firsNumForSumming, secNumForSumming, basis, alphabet);
+                forSumming.Push((long)(GetValInTen(sumResult, basis.ToString(), alphabet)));
+                Console.Clear();
+            }
+            Console.WriteLine("Результат умножения равен " + forSumming.Pop() + " .");
+            Console.WriteLine("Для продолжения нажмите любую клавишу.");
+            Console.ReadKey();
+            Console.Clear();
+        }
+        static void MultiForFive()
+        {
+            char[] alphabet = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '!', '@', '#', '$', '%', '^', '&', '*', '<', '>', '(', ')', '|', '~' };
+            string[] numInfo1 = GetInputNum(alphabet);
+            string[] numInfo2 = GetInputNum(alphabet);
+            while (numInfo1[1] != numInfo2[1])
+            {
+                Console.WriteLine("Системы счисления должны совпадать.");
+                Console.WriteLine("Пожалуйста, попробуйте eщё раз.");
+                Console.ReadKey();
+                Console.Clear();
+                numInfo1 = GetInputNum(alphabet);
+                while (IsMinusOrDotInside(numInfo1[0]) || numInfo1.Length > 5)
+                {
+                    Console.WriteLine("Произведение может осуществляться только для натуральных чисел, длинна которых не превышает 5 символов.");
+                    Console.WriteLine("Пожалуйста, попробуйте eщё раз.");
+                    Console.ReadKey();
+                    Console.Clear();
+                    numInfo1 = GetInputNum(alphabet);
+                }
+                numInfo2 = GetInputNum(alphabet);
+                while (IsMinusOrDotInside(numInfo2[0]) || numInfo2.Length > 5)
+                {
+                    Console.WriteLine("Произведение может осуществляться только для натуральных чисел, длинна которых не превышает 5 символов.");
+                    Console.WriteLine("Пожалуйста, попробуйте eщё раз.");
+                    Console.ReadKey();
+                    Console.Clear();
+                    numInfo2 = GetInputNum(alphabet);
+                }
+                Console.Clear();
+            }
+            Multiplicator(numInfo1[0], numInfo2[0], int.Parse(numInfo1[1]), alphabet);
+            Console.Clear();
         }
     }
 }
