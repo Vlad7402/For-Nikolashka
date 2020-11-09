@@ -12,16 +12,18 @@ namespace For_Nikolashka
         static void Main(string[] args)
         {
             char[] alphabet = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '!', '@', '#', '$', '%', '^', '&', '*', '<', '>', '(', ')', '|', '~' };
-            string[] lines = new string[3];
-            lines[0] = "Перевод числа в различные системы счисления";
+            string[] lines = new string[4];
+            lines[0] = "Перевод числа в различные системы счисления(с поддержкой вещественных)";
             lines[1] = "Перевод числа в римскую систему счисления";
-            lines[2] = "Выход";
+            lines[2] = "Объяснение сложения столбиком";
+            lines[3] = "Выход";
             while (true)
             {
                 int chose = Menu(lines);
                 if (chose == 0) TranslateInAny();
                 if (chose == 1) PrinValInRim();
-                if (chose == 2) break;
+                if (chose == 2) SumForFive();
+                if (chose == 3 ) break;
             }
         }
         static void TranslateInAny()
@@ -542,7 +544,37 @@ namespace For_Nikolashka
         }
         static void SumForFive() 
         {
-            
+            char[] alphabet = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '!', '@', '#', '$', '%', '^', '&', '*', '<', '>', '(', ')', '|', '~' };
+            string[] numInfo1 = GetInputNum(alphabet);
+            string[] numInfo2 = GetInputNum(alphabet);
+            while (numInfo1[1] != numInfo2[1])
+            {
+                Console.WriteLine("Системы счисления должны совпадать.");
+                Console.WriteLine("Пожалуйста, попробуйте eщё раз.");
+                Console.ReadKey();
+                Console.Clear();
+                numInfo1 = GetInputNum(alphabet);
+                while (IsMinusOrDotInside(numInfo1[0]))
+                {
+                    Console.WriteLine("Сумма может осуществляться только для натуральных чисел.");
+                    Console.WriteLine("Пожалуйста, попробуйте eщё раз.");
+                    Console.ReadKey();
+                    Console.Clear();
+                    numInfo1 = GetInputNum(alphabet);
+                }
+                numInfo2 = GetInputNum(alphabet);
+                while (IsMinusOrDotInside(numInfo2[0]))
+                {
+                    Console.WriteLine("Сумма может осуществляться только для натуральных чисел.");
+                    Console.WriteLine("Пожалуйста, попробуйте eщё раз.");
+                    Console.ReadKey();
+                    Console.Clear();
+                    numInfo2 = GetInputNum(alphabet);
+                }
+                Console.Clear();
+            }
+            Sumator(numInfo1[0], numInfo2[0], int.Parse(numInfo1[1]), alphabet);
+            Console.Clear();
         }
         static bool IsMinusOrDotInside(string input)
         {
